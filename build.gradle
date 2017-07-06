@@ -7,7 +7,11 @@ apply plugin: 'war'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+    mavenLocal()
+    maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    maven {
+        url("https://plugins.gradle.org/m2/")
+    }
 }
 
 dependencies {
@@ -16,5 +20,7 @@ dependencies {
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0-b03'
 // https://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj
     compile group: 'org.eclipse.jdt.core.compiler', name: 'ecj', version: '4.6.1'
+// https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
 }

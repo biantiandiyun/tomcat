@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.lzhw.connector;
+package com.lzhw.net;
 
 /**
  * Defines events that occur per socket that require further processing by the

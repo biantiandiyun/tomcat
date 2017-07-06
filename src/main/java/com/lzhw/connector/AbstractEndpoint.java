@@ -1,5 +1,12 @@
 package com.lzhw.connector;
 
+import com.lzhw.net.SocketEvent;
+import com.lzhw.net.SocketProcessorBase;
+import com.lzhw.net.SocketProperties;
+import com.lzhw.net.SocketWrapperBase;
+import com.lzhw.util.SynchronizedStack;
+
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +63,51 @@ public abstract class AbstractEndpoint<S, U> {
      * will not be daemon - and will keep the process alive.
      */
     private boolean daemon = true;
+    /**
+     * Cache for SocketProcessor objects
+     */
+    protected SynchronizedStack<SocketProcessorBase<S>> processorCache;
+    /**
+     * Socket properties
+     */
+    protected final SocketProperties socketProperties = new SocketProperties();
+
+    private volatile BindState bindState = BindState.UNBOUND;
+    /**
+     * Address for the server socket.
+     */
+    private InetAddress address;
+    public InetAddress getAddress() { return address; }
+    public void setAddress(InetAddress address) { this.address = address; }
+
+    /**
+     * Allows the server developer to specify the acceptCount (backlog) that
+     * should be used for server sockets. By default, this value
+     * is 100.
+     */
+    private int acceptCount = 100;
+    public void setAcceptCount(int acceptCount) { if (acceptCount > 0) this.acceptCount = acceptCount; }
+    public int getAcceptCount() { return acceptCount; }
+
+    protected abstract U serverSocketAccept() throws Exception;
+    protected abstract boolean setSocketOptions(U socket);
+    public boolean isRunning() {
+        return running;
+    }
+    /**
+     * Server socket port.
+     */
+    private int port;
+    public int getPort() { return port; }
+    public void setPort(int port ) { this.port=port; }
+
+    public SocketProperties getSocketProperties() {
+        return socketProperties;
+    }
+
+    public int getMaxConnections() {
+        return this.maxConnections;
+    }
 
     public void setDaemon(boolean b) {
         daemon = b;
@@ -92,6 +144,16 @@ public abstract class AbstractEndpoint<S, U> {
         } else {
             return -1;
         }
+    }
+
+    private boolean bindOnInit = true;
+
+    public boolean getBindOnInit() {
+        return bindOnInit;
+    }
+
+    public void setBindOnInit(boolean b) {
+        this.bindOnInit = b;
     }
 
     /**
@@ -150,10 +212,29 @@ public abstract class AbstractEndpoint<S, U> {
             t.start();
         }
     }
+    protected enum BindState {
+        UNBOUND, BOUND_ON_INIT, BOUND_ON_START
+    }
+    public final void init() throws Exception {
+        if (bindOnInit) {
+            bind();
+            bindState = BindState.BOUND_ON_INIT;
+        }
+    }
+
     public final void start() throws Exception {
         startInternal();
     }
+
+    public abstract void bind() throws Exception;
+
     public abstract void startInternal() throws Exception;
+
+    protected abstract void closeSocket(U socket);
+
+    protected void destroySocket(U socket) {
+        closeSocket(socket);
+    }
     public Executor getExecutor() {
         return executor;
     }
@@ -222,4 +303,11 @@ public abstract class AbstractEndpoint<S, U> {
 
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
 }

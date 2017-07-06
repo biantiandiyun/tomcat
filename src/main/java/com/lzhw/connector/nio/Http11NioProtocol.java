@@ -8,13 +8,7 @@ import com.lzhw.connector.AbstractProtocol;
  */
 public class Http11NioProtocol extends AbstractProtocol {
 
-    public Http11NioProtocol(AbstractEndpoint endpoint) {
-        super(endpoint);
+    public Http11NioProtocol( ) {
+        super(new NioEndpoint());
     }
-
-    @Override
-    public void start() {
-
-    }
-
 }

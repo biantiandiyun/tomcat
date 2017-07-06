@@ -16,6 +16,9 @@
  */
 package com.lzhw.connector;
 
+import com.lzhw.net.SocketEvent;
+import com.lzhw.net.SocketWrapperBase;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 

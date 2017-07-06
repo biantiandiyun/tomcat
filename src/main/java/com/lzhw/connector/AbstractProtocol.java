@@ -1,5 +1,9 @@
 package com.lzhw.connector;
 
+import com.lzhw.net.SocketEvent;
+import com.lzhw.net.SocketWrapperBase;
+
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +26,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler {
     // ---------------------- Properties that are passed through to the EndPoint
     @Override
     public void init() throws Exception {
-
+        endpoint.init();
     }
     @Override
     public Executor getExecutor() {
@@ -56,6 +60,16 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler {
         return endpoint;
     }
 
+    public InetAddress getAddress() { return endpoint.getAddress(); }
+
+    public void setAddress(InetAddress ia) {
+        endpoint.setAddress(ia);
+    }
+
+    public int getPort() { return endpoint.getPort(); }
+    public void setPort(int port) {
+        endpoint.setPort(port);
+    }
     protected static class ConnectionHandler<S> implements AbstractEndpoint.Handler<S> {
         private final AbstractProtocol<S> proto;
 

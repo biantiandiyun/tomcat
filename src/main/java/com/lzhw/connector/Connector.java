@@ -1,12 +1,12 @@
 package com.lzhw.connector;
 
-import com.lzhw.connector.apr.Http11AprProtocol;
 import com.lzhw.connector.nio.Http11NioProtocol;
+import com.lzhw.core.LifecycleBase;
 
 /**
  * Created by admin on 2017/5/5.
  */
-public class Connector {
+public class Connector extends LifecycleBase {
 
     /**
      * Coyote protocol handler.
@@ -23,13 +23,20 @@ public class Connector {
 
     protected int port = -1;
 
-    public void start() {
+    @Override
+    protected void initInternal() throws Exception {
+        protocolHandler.init();
+    }
+
+    @Override
+    protected void startInternal() throws Exception {
         try {
             protocolHandler.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      * @return the port number on which this connector is configured to listen
@@ -51,7 +58,16 @@ public class Connector {
     }
 
     public static void main(String[] args) {
-        Connector connector = new Connector(new Http11AprProtocol());
-        connector.start();
+        Http11NioProtocol http11NioProtocol = new Http11NioProtocol();
+        http11NioProtocol.setPort(8000);
+        Connector connector = new Connector(new Http11NioProtocol());
+        connector.setPort(8000);
+        try {
+            connector.initInternal();
+            connector.startInternal();
+            Thread.sleep(100000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

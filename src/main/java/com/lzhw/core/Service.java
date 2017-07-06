@@ -30,8 +30,6 @@ package com.lzhw.core;
  *
  * @author Craig R. McClanahan
  */
-public interface Service {
-
-    void start();
+public interface Service extends Lifecycle {
 
 }
